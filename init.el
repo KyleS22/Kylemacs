@@ -1,3 +1,19 @@
+;;;; Viper Mode
+(setq viper-mode t)
+(require 'viper)
+
+(eval-after-load "dired" '(progn
+  (define-key dired-mode-map "j" 'dired-next-line)))
+
+(eval-after-load "dired" '(progn
+	(define-key dired-mode-map "k" 'dired-previous-line)
+	(define-key dired-mode-map "v" 'dired-x-find-file)
+	(define-key dired-mode-map "V" 'dired-view-file)
+	(define-key dired-mode-map "j" 'dired-next-line)
+	(define-key dired-mode-map "J" 'dired-goto-file)
+	(define-key dired-mode-map "k" 'dired-previous-line)
+	(define-key dired-mode-map "K" 'dired-do-kill-lines)))
+;;(viper-mode)
 
 ;;;; Basic Environment Settings
 (setq inhibit-startup-message t)
@@ -19,12 +35,17 @@
 ;; Set modeline to a better colour
 (set-face-background 'mode-line "#202020")
 (set-face-foreground 'mode-line "#808080")
+(set-cursor-color "#ffffff") 
 
 ;; Enable Transient Mark Mode
 (transient-mark-mode 1)
 
 ;; Auto Close Braces
 (electric-pair-mode 1)
+
+
+;; Move Windows
+(windmove-default-keybindings)
 
 ;;; Orgmode Config
 ;; Enable Orgmode
@@ -43,7 +64,12 @@
 (defun my-org-confirm-babel-evaluate (lang body)
   (and (not (string= lang "python") not (string= lang "shell")))) ; Dont ask for python
 
-(setq org-confirm-babel-evaluate #'my-org-confirm-babel-evaluate)
+(setq org-confirm-babel-evaluate nil)
+
+(add-hook 'org-shiftup-final-hook 'windmove-up)
+(add-hook 'org-shiftleft-final-hook 'windmove-left)
+(add-hook 'org-shiftdown-final-hook 'windmove-down)
+(add-hook 'org-shiftright-final-hook 'windmove-right)
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
