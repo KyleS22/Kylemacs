@@ -45,7 +45,7 @@ Viper Mode Has Its Own Config in `.emacs.d/viper`
 #+END_SRC
 
 ** Compltion With Ido
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
 
   ;;;; IDO
   (require 'ido)
@@ -60,13 +60,13 @@ Viper Mode Has Its Own Config in `.emacs.d/viper`
 #+END_SRC
 
 ** Command Completion In Minibuffer
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
 (icomplete-mode 1)
 
 #+END_SRC
 
 ** UI Changes
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   (setq inhibit-startup-message t)
 
   (scroll-bar-mode -1)
@@ -82,7 +82,7 @@ Viper Mode Has Its Own Config in `.emacs.d/viper`
 #+END_SRC
 
 ** Theme Related
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
 
   (load-theme 'tango-dark)
 
@@ -100,21 +100,21 @@ Viper Mode Has Its Own Config in `.emacs.d/viper`
 #+END_SRC
 
 ** Transients
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
 (transient-mark-mode 1)
 
 #+END_SRC
 
 ** Brace Completion
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
 (electric-pair-mode 1)
-
+(show-paren-mode 1)
 #+END_SRC
 
 
 ** Window Switching
 Enable Switching between windows using "<SHIFT>-arrow"
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   (windmove-default-keybindings)
 
   ;; Orgmode Has Its Own Shift bindings
@@ -125,7 +125,7 @@ Enable Switching between windows using "<SHIFT>-arrow"
 #+END_SRC
 
 ** Configure Org
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   (require 'org)
 
   ;; Make Org Work With Org Files
@@ -137,7 +137,7 @@ Enable Switching between windows using "<SHIFT>-arrow"
 *** Org Babel
 Org mode will not run languages that are not configured, so specify them here.  Org will also prompt for running languages by default, but I don't want that.
 
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((python .t)
@@ -166,7 +166,7 @@ Do the same for the `~/notes/notes.org`
 #+END_SRC
 
 
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   (setq org-directory "~/notes")
   (setq org-agenda-files
 	(mapcar 'file-truename
@@ -177,7 +177,7 @@ Do the same for the `~/notes/notes.org`
 To use GTD, we will have the concept of an inbox.  This is a place that we can quickly add new TODO items to deal with later.
 We can use "C-c i" to quickly create a new todo item.  We can also use "C-c c" to open the org capture menu for other types of captures.
 
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   ;; Create Templates For Inbox and Notes
   (setq org-capture-templates
 	(quote
@@ -204,7 +204,7 @@ We can use "C-c i" to quickly create a new todo item.  We can also use "C-c c" t
 *** Configuring The Agenda
 We want Quick Access to the agenda through "C-c a".  We also define an agenda prefix format for different items.
 
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   (global-set-key (kbd "C-c a") 'org-agenda)
 
   (setq org-agenda-prefix-format
@@ -218,7 +218,7 @@ We want Quick Access to the agenda through "C-c a".  We also define an agenda pr
 When we open the TODO list through "C-c a", we can get a list of all the TODO items in the inbox.  We wnat to be able to move those todo items to a new place, probably whatever notes file we are currently working in.
 This allows us to organize TODOs based on projects. We can refile the task with 'C-c C-w'.  This will help us move the task.  Replace "TARGET_FILE.org" with your main notes file.
 We also add the ability to auto save when we refile.
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
 
   (setq org-refile-targets
 	'(("TARGET-FILE.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")))
@@ -243,7 +243,7 @@ We also add the ability to auto save when we refile.
 
 We also want to be able to activate tasks we are currently working on. To do this we will add new TODO states.
 
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   (setq org-todo-keywords
 	'((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)")))
 
@@ -252,7 +252,7 @@ We also want to be able to activate tasks we are currently working on. To do thi
 
 For time tracking, we can add the ability to automatically log the time that a task was switched to the NEXT state.  We can also automatically log when it is moved to the DONE state.
 
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   (defun log-todo-next-creation-date (&rest ignore)
     "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
     (when (and (string= (org-get-todo-state) "NEXT")
@@ -266,7 +266,7 @@ For time tracking, we can add the ability to automatically log the time that a t
 
 Next, we add a special agenda view for GTD
 
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   (setq org-agenda-custom-commands
 	'(("g" "Get Things Done (GTD)"
 	   ((agenda ""
@@ -296,11 +296,38 @@ Next, we add a special agenda view for GTD
 ** Type Break
 I like my hands, so remind me to rest them once in a while.
 
-#+BEGIN_SRC elisp :tangle ./init.el
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
   (setq type-break-mode t)
   (setq type-break-good-rest-interval 60)
   (setq type-break-interval 1800)
   (setq type-break-mode-line-message-mode t)
   (setq type-break-terse-messages t)
   (setq type-break-time-warning-intervals '(300 120 60 30 15))
+  (setq type-break-query-mode t)
+#+END_SRC
+
+** CTAGS
+I often use ctags to navigate code bases. What I want here is to auto generate ctags files for the current project, without blocking.  
+
+#+BEGIN_SRC elisp :tangle ./init.el :comments org
+  ;; Currently this will generate tags for the current directory of the current file, and its file type.
+  (defun git-root-dir ()
+    "Get the root directory of a git repo."
+    (interactive)
+    (substring (shell-command-to-string "git rev-parse --show-toplevel") 0 -1))
+
+  (defun generate-etags (dir-name extension)
+    "Create a tags file."
+    (interactive)
+    (call-process "/bin/bash" nil t nil "-c" 
+		  (format "find %s -type f -name \"*.%s\" | etags -o %s/TAGS.new - && ! cmp --silent %s/TAGS %s/TAGS.new && mv %s/TAGS.new %s/TAGS" dir-name extension dir-name dir-name dir-name dir-name dir-name)))
+
+  (defun generate-etags-cur-buffer ()
+    "Generates etags for the directory of the current buffer."
+    (interactive)
+    (generate-etags (git-root-dir) (file-name-extension (buffer-file-name))))
+
+  ;; Call after save
+  ;; This was causing problems where I could not leave
+  (add-hook 'after-save-hook #'generate-etags-cur-buffer)
 #+END_SRC

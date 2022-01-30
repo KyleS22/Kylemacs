@@ -19,6 +19,8 @@
 
 ;; TODO: I Have Not Gotten This To Work Yet
 
+;; Compltion With Ido
+
 ;;;; IDO
 (require 'ido)
 (ido-mode t)
@@ -30,7 +32,11 @@
 (setq ido-use-filename-at-point t)
 (setq ido-separator "\n")
 
+;; Command Completion In Minibuffer
+
 (icomplete-mode 1)
+
+;; UI Changes
 
 (setq inhibit-startup-message t)
 
@@ -42,6 +48,8 @@
 (global-display-line-numbers-mode 1)
 
 (setq visible-bell t)
+
+;; Theme Related
 
 (load-theme 'tango-dark)
 
@@ -57,9 +65,17 @@
 (custom-set-faces
  '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight bold :height 109 :width normal)))))
 
+;; Transients
+
 (transient-mark-mode 1)
 
+;; Brace Completion
+
 (electric-pair-mode 1)
+(show-paren-mode 1)
+
+;; Window Switching
+;; Enable Switching between windows using "<SHIFT>-arrow"
 
 (windmove-default-keybindings)
 
@@ -69,10 +85,16 @@
 (add-hook 'org-shiftdown-final-hook 'windmove-down)
 (add-hook 'org-shiftright-final-hook 'windmove-right)
 
+;; Configure Org
+
 (require 'org)
 
 ;; Make Org Work With Org Files
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+
+;; Org Babel
+;; Org mode will not run languages that are not configured, so specify them here.  Org will also prompt for running languages by default, but I don't want that.
+
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -85,6 +107,12 @@
 (setq org-agenda-files
       (mapcar 'file-truename
 	      (file-expand-wildcards "~/notes/*.org")))
+
+
+
+;; To use GTD, we will have the concept of an inbox.  This is a place that we can quickly add new TODO items to deal with later.
+;; We can use "C-c i" to quickly create a new todo item.  We can also use "C-c c" to open the org capture menu for other types of captures.
+
 
 ;; Create Templates For Inbox and Notes
 (setq org-capture-templates
@@ -107,6 +135,10 @@
 
 (global-set-key (kbd "C-c i") 'org-capture-inbox)
 
+;; Configuring The Agenda
+;; We want Quick Access to the agenda through "C-c a".  We also define an agenda prefix format for different items.
+
+
 (global-set-key (kbd "C-c a") 'org-agenda)
 
 (setq org-agenda-prefix-format
@@ -114,6 +146,13 @@
 	(todo . " ")
 	(tags . " %i %-12:c")
 	(search . " %i %-12:c")))
+
+
+
+
+;; When we open the TODO list through "C-c a", we can get a list of all the TODO items in the inbox.  We wnat to be able to move those todo items to a new place, probably whatever notes file we are currently working in.
+;; This allows us to organize TODOs based on projects. We can refile the task with 'C-c C-w'.  This will help us move the task.  Replace "TARGET_FILE.org" with your main notes file.
+;; We also add the ability to auto save when we refile.
 
 (setq org-refile-targets
       '(("TARGET-FILE.org" :regexp . "\\(?:\\(?:Note\\|Task\\)s\\)")))
@@ -135,8 +174,18 @@ See also 'org-save-all-org-buffers'"
 	    (lambda (&rest _)
 	      (gtd-save-org-buffers)))
 
+
+
+;; We also want to be able to activate tasks we are currently working on. To do this we will add new TODO states.
+
+
 (setq org-todo-keywords
       '((sequence "TODO(t)" "NEXT(n)" "HOLD(h)" "|" "DONE(d)")))
+
+
+
+;; For time tracking, we can add the ability to automatically log the time that a task was switched to the NEXT state.  We can also automatically log when it is moved to the DONE state.
+
 
 (defun log-todo-next-creation-date (&rest ignore)
   "Log NEXT creation time in the property drawer under the key 'ACTIVATED'"
@@ -146,6 +195,11 @@ See also 'org-save-all-org-buffers'"
 
 (add-hook 'org-after-todo-state-change-hook #'log-todo-next-creation-date)
 (setq org-log-done 'time)
+
+
+
+;; Next, we add a special agenda view for GTD
+
 
 (setq org-agenda-custom-commands
       '(("g" "Get Things Done (GTD)"
@@ -171,9 +225,39 @@ See also 'org-save-all-org-buffers'"
 	  (tags "CLOSED>=\"<today>\""
 		((org-agenda-overriding-header "\nCompleted Today\n")))))))
 
+;; Type Break
+;; I like my hands, so remind me to rest them once in a while.
+
+
 (setq type-break-mode t)
 (setq type-break-good-rest-interval 60)
 (setq type-break-interval 1800)
 (setq type-break-mode-line-message-mode t)
 (setq type-break-terse-messages t)
 (setq type-break-time-warning-intervals '(300 120 60 30 15))
+(setq type-break-query-mode t)
+
+;; CTAGS
+;; I often use ctags to navigate code bases. What I want here is to auto generate ctags files for the current project, without blocking.  
+
+
+;; Currently this will generate tags for the current directory of the current file, and its file type.
+(defun git-root-dir ()
+  "Get the root directory of a git repo."
+  (interactive)
+  (substring (shell-command-to-string "git rev-parse --show-toplevel") 0 -1))
+
+(defun generate-etags (dir-name extension)
+  "Create a tags file."
+  (interactive)
+  (call-process "/bin/bash" nil t nil "-c" 
+		(format "find %s -type f -name \"*.%s\" | etags -o %s/TAGS.new - && ! cmp --silent %s/TAGS %s/TAGS.new && mv %s/TAGS.new %s/TAGS" dir-name extension dir-name dir-name dir-name dir-name dir-name)))
+
+(defun generate-etags-cur-buffer ()
+  "Generates etags for the directory of the current buffer."
+  (interactive)
+  (generate-etags (git-root-dir) (file-name-extension (buffer-file-name))))
+
+;; Call after save
+;; This was causing problems where I could not leave
+(add-hook 'after-save-hook #'generate-etags-cur-buffer)
