@@ -73,7 +73,7 @@ Viper Mode Has Its Own Config in `.emacs.d/viper`
   (tool-bar-mode -1)
   (tooltip-mode -1)
   (set-fringe-mode 10)
-
+  (menu-bar-mode -1)
   (global-display-line-numbers-mode 1)
 
   (setq visible-bell t)
@@ -309,6 +309,7 @@ I like my hands, so remind me to rest them once in a while.
 ** CTAGS
 I often use ctags to navigate code bases. What I want here is to auto generate ctags files for the current project, without blocking.  
 
+
 #+BEGIN_SRC elisp :tangle ./init.el :comments org
   ;; Currently this will generate tags for the current directory of the current file, and its file type.
   (defun git-root-dir ()
@@ -325,7 +326,8 @@ I often use ctags to navigate code bases. What I want here is to auto generate c
   (defun generate-etags-cur-buffer ()
     "Generates etags for the directory of the current buffer."
     (interactive)
-    (generate-etags (git-root-dir) (file-name-extension (buffer-file-name))))
+    (if (vc-registered (buffer-file-name))
+	(generate-etags (git-root-dir) (file-name-extension (buffer-file-name)))))
 
   ;; Call after save
   ;; This was causing problems where I could not leave

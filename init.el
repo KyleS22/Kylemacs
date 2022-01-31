@@ -44,7 +44,7 @@
 (tool-bar-mode -1)
 (tooltip-mode -1)
 (set-fringe-mode 10)
-
+(menu-bar-mode -1)
 (global-display-line-numbers-mode 1)
 
 (setq visible-bell t)
@@ -256,7 +256,8 @@ See also 'org-save-all-org-buffers'"
 (defun generate-etags-cur-buffer ()
   "Generates etags for the directory of the current buffer."
   (interactive)
-  (generate-etags (git-root-dir) (file-name-extension (buffer-file-name))))
+  (if (vc-registered (buffer-file-name))
+      (generate-etags (git-root-dir) (file-name-extension (buffer-file-name)))))
 
 ;; Call after save
 ;; This was causing problems where I could not leave
